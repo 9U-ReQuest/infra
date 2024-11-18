@@ -3,7 +3,7 @@ resource "aws_vpc" "request" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "request/${terraform.workspace}.vpc"
+    Name = "request-${terraform.workspace}.vpc"
     channel = "${terraform.workspace}"
   }
 }
@@ -12,7 +12,7 @@ resource "aws_vpc" "request" {
 resource "aws_internet_gateway" "request" {
   vpc_id = aws_vpc.request.id
   tags = {
-    Name = "request/${terraform.workspace}.igw"
+    Name = "request-${terraform.workspace}.igw"
     channel = "${terraform.workspace}"
   }
 }
@@ -23,7 +23,7 @@ resource "aws_subnet" "request_public" {
   cidr_block        = "10.0.1.0/24"
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "request/${terraform.workspace}.subnet.public"
+    Name = "request-${terraform.workspace}.subnet.public"
     channel = "${terraform.workspace}"
   }
 }
@@ -33,7 +33,7 @@ resource "aws_subnet" "request_private" {
   cidr_block        = "10.0.101.0/24"
   availability_zone = "ap-northeast-2a"
   tags = {
-    Name = "request/${terraform.workspace}.subnet.private"
+    Name = "request-${terraform.workspace}.subnet.private"
     channel = "${terraform.workspace}"
   }
 }
@@ -48,7 +48,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "request/${terraform.workspace}.rtb.public"
+    Name = "request-${terraform.workspace}.rtb.public"
     channel = "${terraform.workspace}"
   }
 }
