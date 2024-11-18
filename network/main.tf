@@ -2,7 +2,7 @@ terraform {
     backend "s3" {
         bucket = "request-tf-states"
         key = "network"
-        region = "${var.aws_region}"
+        region = "ap-northeast-2"
     }
 }
 
