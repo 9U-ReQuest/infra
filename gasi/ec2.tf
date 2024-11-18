@@ -10,23 +10,23 @@ resource "aws_security_group" "gasi" {
   vpc_id = data.terraform_remote_state.network.outputs.vpc_id
 
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 443
-    to_port   = 443
-    protocol  = "tcp"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -34,11 +34,11 @@ resource "aws_security_group" "gasi" {
 # EC2 인스턴스
 resource "aws_instance" "gasi" {
 
-  ami = "ami-06f73fc34ddfd65c2"  # Amazon Linux 2023 AMI
-  instance_type        = "t2.micro"
-  subnet_id            = data.terraform_remote_state.network.outputs.public_subnet_id
+  ami                    = "ami-06f73fc34ddfd65c2" # Amazon Linux 2023 AMI
+  instance_type          = "t2.micro"
+  subnet_id              = data.terraform_remote_state.network.outputs.public_subnet_id
   vpc_security_group_ids = [aws_security_group.gasi.id]
-  iam_instance_profile = aws_iam_instance_profile.gasi.name
+  iam_instance_profile   = aws_iam_instance_profile.gasi.name
 
   user_data = <<-EOF
     #!/bin/bash
@@ -66,5 +66,14 @@ resource "aws_instance" "gasi" {
   EOF
   tags = {
     Name = "request-${terraform.workspace}.gasi"
+  }
+}
+
+# 탄력적 IP 생성
+resource "aws_eip" "gasi" {
+  instance = aws_instance.gasi.id
+  domain   = "vpc"
+  tags = {
+    Name = "request-${terraform.workspace}.gasi.eip"
   }
 }
