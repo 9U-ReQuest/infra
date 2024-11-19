@@ -31,13 +31,41 @@ jobs:
         run: terraform plan
       - name: Terraform apply
         run: terraform apply -auto-approve
-      - name: Generate output
+      - name: Generate output from terraform
+        id: generate-output
         run: |
-          {
-            echo "${{ matrix.module }}<<EOF"
-            terraform output -json
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
+          terraform output -json
+      - name: Install libsodium-wrappers
+        working-directory: ./
+        run: |
+          npm install libsodium-wrappers
+      - name: Store output into organization variable
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_SECRET_GITHUB_TOKEN }}
+          script: |
+            const sodium = require('libsodium-wrappers');
+
+            const secret_name = `${{ matrix.module }}_outputs_dev`.replace('-', '_');
+            const secret = `${{ steps.generate-output.outputs.stdout }}`;
+            console.log(secret_name);
+            const publicKey = github.rest.actions.getOrgPublicKey({ org: '9U-ReQuest' }).then((publicKey) => {
+              sodium.ready.then(() => {
+                const binKey = sodium.from_base64(publicKey.data.key, sodium.base64_variants.ORIGINAL);
+                const binSec = sodium.from_string(secret);
+
+                const encBytes = sodium.crypto_box_seal(binSec, binKey);
+
+                const output = sodium.to_base64(encBytes, sodium.base64_variants.ORIGINAL);
+                github.rest.actions.createOrUpdateOrgSecret({
+                  org: '9U-ReQuest',
+                  secret_name,
+                  encrypted_value: output,
+                  key_id: publicKey.data.key_id,
+                  visibility: 'all'
+                });
+              });
+            });
   apply-applications:
     needs: apply-base
     strategy:
@@ -62,10 +90,38 @@ jobs:
         run: terraform plan
       - name: Terraform apply
         run: terraform apply -auto-approve
-      - name: Generate output
+      - name: Generate output from terraform
+        id: generate-output
         run: |
-          {
-            echo "${{ matrix.module }}<<EOF"
-            terraform output -json
-            echo EOF
-          } >> "$GITHUB_OUTPUT"
+          terraform output -json
+      - name: Install libsodium-wrappers
+        working-directory: ./
+        run: |
+          npm install libsodium-wrappers
+      - name: Store output into organization variable
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ORG_SECRET_GITHUB_TOKEN }}
+          script: |
+            const sodium = require('libsodium-wrappers');
+
+            const secret_name = `${{ matrix.module }}_outputs_dev`.replace('-', '_');
+            const secret = `${{ steps.generate-output.outputs.stdout }}`;
+            console.log(secret_name);
+            const publicKey = github.rest.actions.getOrgPublicKey({ org: '9U-ReQuest' }).then((publicKey) => {
+              sodium.ready.then(() => {
+                const binKey = sodium.from_base64(publicKey.data.key, sodium.base64_variants.ORIGINAL);
+                const binSec = sodium.from_string(secret);
+
+                const encBytes = sodium.crypto_box_seal(binSec, binKey);
+
+                const output = sodium.to_base64(encBytes, sodium.base64_variants.ORIGINAL);
+                github.rest.actions.createOrUpdateOrgSecret({
+                  org: '9U-ReQuest',
+                  secret_name,
+                  encrypted_value: output,
+                  key_id: publicKey.data.key_id,
+                  visibility: 'all'
+                });
+              });
+            });
