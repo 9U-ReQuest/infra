@@ -1,0 +1,57 @@
+name: 개발 인프라 배표
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+env:
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+jobs:
+  apply-base:
+    strategy:
+      matrix:
+        module: ["network", "codedeploy", "container-registry"]
+    name: "Apply base layer"
+    if: github.repository == '9U-ReQuest/infra'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        run: |
+          cd ${{ matrix.module }}  
+          terraform init
+          terraform workspace new dev
+      - name: Terraform plan
+        run: terraform plan
+      - name: Terraform apply
+        run: |
+          terraform apply -auto-approve
+      - name: Generate output
+        run: echo "${{ matrix.module }}=$(terraform output -json)" >> "$GITHUB_OUTPUT"
+  apply-application:
+    strategy:
+      matrix:
+        module: ["gasi"]
+    if: github.repository == '9U-ReQuest/infra'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        run: |
+          cd ${{ matrix.module }}  
+          terraform init
+          terraform workspace new dev
+      - name: Terraform plan
+        run: terraform plan
+      - name: Terraform apply
+        run: |
+          terraform apply -auto-approve
+      - name: Generate output
+        run: echo "${{ matrix.module }}=$(terraform output -json)" >> "$GITHUB_OUTPUT"
