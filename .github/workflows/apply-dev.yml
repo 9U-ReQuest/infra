@@ -1,4 +1,4 @@
-name: 개발 인프라 배표
+name: 개발 인프라 배포
 
 on:
   push:
@@ -15,6 +15,9 @@ jobs:
     name: "Apply base layer"
     if: github.repository == '9U-ReQuest/infra'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ matrix.module }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,22 +25,30 @@ jobs:
         uses: hashicorp/setup-terraform@v3
       - name: Terraform Init
         run: |
-          cd ${{ matrix.module }}  
           terraform init
-          terraform workspace new dev
+          terraform workspace select -or-create dev
       - name: Terraform plan
         run: terraform plan
       - name: Terraform apply
-        run: |
-          terraform apply -auto-approve
+        run: terraform apply -auto-approve
       - name: Generate output
-        run: echo "${{ matrix.module }}=$(terraform output -json)" >> "$GITHUB_OUTPUT"
-  apply-application:
+        run: |
+          {
+            echo "${{ matrix.module }}<<EOF"
+            terraform output -json
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+  apply-applications:
+    needs: apply-base
     strategy:
       matrix:
         module: ["gasi"]
+    name: "Apply applications"
     if: github.repository == '9U-ReQuest/infra'
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ matrix.module }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,13 +56,16 @@ jobs:
         uses: hashicorp/setup-terraform@v3
       - name: Terraform Init
         run: |
-          cd ${{ matrix.module }}  
           terraform init
-          terraform workspace new dev
+          terraform workspace select -or-create dev
       - name: Terraform plan
         run: terraform plan
       - name: Terraform apply
-        run: |
-          terraform apply -auto-approve
+        run: terraform apply -auto-approve
       - name: Generate output
-        run: echo "${{ matrix.module }}=$(terraform output -json)" >> "$GITHUB_OUTPUT"
+        run: |
+          {
+            echo "${{ matrix.module }}<<EOF"
+            terraform output -json
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
