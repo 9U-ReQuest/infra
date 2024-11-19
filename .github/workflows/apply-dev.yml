@@ -5,6 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
 env:
+  CHANNEL: dev
   AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 jobs:
@@ -26,7 +27,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init
-          terraform workspace select -or-create dev
+          terraform workspace select -or-create ${{ env.CHANNEL}}
       - name: Terraform plan
         run: terraform plan
       - name: Terraform apply
@@ -46,7 +47,7 @@ jobs:
           script: |
             const sodium = require('libsodium-wrappers');
 
-            const secret_name = `${{ matrix.module }}_outputs_dev`.replace('-', '_');
+            const secret_name = `${{ matrix.module }}_outputs_${{ env.CHANNEL }}`.replace('-', '_');
             const secret = `${{ steps.generate-output.outputs.stdout }}`;
             console.log(secret_name);
             const publicKey = github.rest.actions.getOrgPublicKey({ org: '9U-ReQuest' }).then((publicKey) => {
@@ -85,7 +86,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init
-          terraform workspace select -or-create dev
+          terraform workspace select -or-create ${{ env.CHANNEL }}
       - name: Terraform plan
         run: terraform plan
       - name: Terraform apply
@@ -105,7 +106,7 @@ jobs:
           script: |
             const sodium = require('libsodium-wrappers');
 
-            const secret_name = `${{ matrix.module }}_outputs_dev`.replace('-', '_');
+            const secret_name = `${{ matrix.module }}_outputs_${{ env.CHANNEL }}`.replace('-', '_');
             const secret = `${{ steps.generate-output.outputs.stdout }}`;
             console.log(secret_name);
             const publicKey = github.rest.actions.getOrgPublicKey({ org: '9U-ReQuest' }).then((publicKey) => {
