@@ -27,7 +27,7 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init
-          terraform workspace select -or-create ${{ env.CHANNEL}}
+          terraform workspace select -or-create ${{ env.CHANNEL }}
       - name: Terraform plan
         run: terraform plan
       - name: Terraform apply
@@ -35,7 +35,7 @@ jobs:
       - name: Generate output from terraform
         id: generate-output
         run: |
-          terraform output -json
+          terraform output -json | jq -c .
       - name: Install libsodium-wrappers
         working-directory: ./
         run: |
@@ -94,7 +94,7 @@ jobs:
       - name: Generate output from terraform
         id: generate-output
         run: |
-          terraform output -json
+          terraform output -json | jq -c .
       - name: Install libsodium-wrappers
         working-directory: ./
         run: |
