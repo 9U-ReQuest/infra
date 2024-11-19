@@ -1,4 +1,4 @@
 variable "aws_region" {
-    description = "AWS Region"
-    default     = "ap-northeast-2"
+  description = "AWS Region"
+  default     = "ap-northeast-2"
 }

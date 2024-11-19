@@ -11,7 +11,7 @@ resource "aws_codedeploy_deployment_group" "gasi" {
   deployment_config_name = "CodeDeployDefault.OneAtATime"
   auto_rollback_configuration {
     enabled = true
-    events = ["DEPLOYMENT_FAILURE"]
+    events  = ["DEPLOYMENT_FAILURE"]
   }
   tags = {
     Name = "request-${terraform.workspace}.codedeploy.group.gasi"
@@ -31,7 +31,7 @@ resource "aws_codedeploy_deployment_group" "agi" {
   deployment_config_name = "CodeDeployDefault.OneAtATime"
   auto_rollback_configuration {
     enabled = true
-    events = ["DEPLOYMENT_FAILURE"]
+    events  = ["DEPLOYMENT_FAILURE"]
   }
 
   tags = {
@@ -52,6 +52,6 @@ resource "aws_codedeploy_deployment_group" "cari" {
   deployment_config_name = "CodeDeployDefault.OneAtATime"
   auto_rollback_configuration {
     enabled = true
-    events = ["DEPLOYMENT_FAILURE"]
+    events  = ["DEPLOYMENT_FAILURE"]
   }
 }
