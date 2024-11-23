@@ -33,7 +33,19 @@ resource "aws_iam_role_policy" "agi_ecr" {
           "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage"
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage",
+          "ecr:GetLifecyclePolicy",
+          "ecr:GetLifecyclePolicyPreview",
+          "ecr:ListTagsForResource",
+          "ecr:DescribeImageScanFindings",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload",
+          "ecr:PutImage"
         ]
         Resource = "*"
       }
@@ -41,7 +53,7 @@ resource "aws_iam_role_policy" "agi_ecr" {
   })
 }
 
-# S3 접근 정책
+# CodeDeploy S3 접근 정책
 resource "aws_iam_role_policy" "agi_s3" {
   name = "request-${terraform.workspace}.agi.role.policy.s3.codedeploy"
   role = aws_iam_role.agi.id
@@ -78,8 +90,8 @@ resource "aws_iam_role_policy" "agi_assignment_s3" {
           "s3:*",
         ]
         Resource = [
-          data.terraform_remote_state.codedeploy.outputs.bucket_arn,
-          "${data.terraform_remote_state.codedeploy.outputs.bucket_arn}/*"
+          aws_s3_bucket.assignment.arn,
+          "${aws_s3_bucket.assignment.arn}/*"
         ]
       }
     ]
