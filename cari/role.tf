@@ -41,6 +41,28 @@ resource "aws_iam_role_policy" "cari_ecr" {
   })
 }
 
+# CodeDeploy Private 접근 정책
+resource "aws_iam_role_policy" "cari_codedeploy" {
+  name = "request-${terraform.workspace}.cari.role.policy.codedeploy"
+  role = aws_iam_role.cari.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "codedeploy-commands-secure:GetDeploymentSpecification",
+          "codedeploy-commands-secure:PollHostCommand",
+          "codedeploy-commands-secure:PutHostCommandAcknowledgement",
+          "codedeploy-commands-secure:PutHostCommandComplete"
+        ],
+        Effect = "Allow",
+        Resource = "*",
+      }
+    ]
+  })
+}
+
 # S3 접근 정책
 resource "aws_iam_role_policy" "cari_s3" {
   name = "request-${terraform.workspace}.cari.role.policy.s3.codedeploy"
