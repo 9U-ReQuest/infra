@@ -9,6 +9,6 @@ output "submission_bucket" {
 }
 
 output "public_ip" {
-  description = "public ip of agi"
-  value = aws_instance.agi.public_ip
+  description = "public ip of cari"
+  value = aws_instance.cari.public_ip
 }
