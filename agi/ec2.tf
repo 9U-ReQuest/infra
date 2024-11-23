@@ -36,9 +36,10 @@ resource "aws_instance" "agi" {
 
   ami                    = "ami-06f73fc34ddfd65c2" # Amazon Linux 2023 AMI
   instance_type          = "t2.micro"
-  subnet_id              = data.terraform_remote_state.network.outputs.private_subnet_id
+  subnet_id              = data.terraform_remote_state.network.outputs.public_subnet_id
   vpc_security_group_ids = [aws_security_group.agi.id]
   iam_instance_profile   = aws_iam_instance_profile.agi.name
+  associate_public_ip_address = true
 
   user_data = <<-EOF
     #!/bin/bash

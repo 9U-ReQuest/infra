@@ -7,3 +7,8 @@ output "submission_bucket" {
   description = "submission bucket name"
   value       = aws_s3_bucket.submission.bucket
 }
+
+output "public_ip" {
+  description = "public ip of agi"
+  value = aws_instance.agi.public_ip
+}
