@@ -46,6 +46,7 @@ resource "aws_instance" "cari" {
   subnet_id              = data.terraform_remote_state.network.outputs.public_subnet_id
   vpc_security_group_ids = [aws_security_group.cari.id]
   iam_instance_profile   = aws_iam_instance_profile.cari.name
+  associate_public_ip_address = true
 
   user_data = <<-EOF
     #!/bin/bash
