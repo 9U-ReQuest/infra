@@ -45,6 +45,7 @@ resource "aws_instance" "agi" {
     exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
     yum update -y
     yum install -y docker
+    echo '{ "hosts": ["tcp://0.0.0.0:2375", "unix:///var/run/docker.sock"] }' | sudo tee -a /etc/docker/daemon.json
     service docker start
     usermod -a -G docker ec2-user
 
