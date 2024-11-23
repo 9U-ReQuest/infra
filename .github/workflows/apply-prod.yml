@@ -69,7 +69,7 @@ jobs:
     needs: apply-base
     strategy:
       matrix:
-        module: ["gasi"]
+        module: ["gasi", "agi"]
     name: "Apply applications"
     if: github.repository == '9U-ReQuest/infra'
     runs-on: ubuntu-latest
