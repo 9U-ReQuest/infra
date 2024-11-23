@@ -55,10 +55,7 @@ resource "aws_iam_role_policy" "gasi_s3" {
           "s3:GetObject",
           "s3:ListBucket"
         ]
-        Resource = [
-          data.terraform_remote_state.codedeploy.outputs.bucket_arn,
-          "${data.terraform_remote_state.codedeploy.outputs.bucket_arn}/*"
-        ]
+        Resource = ["*"]
       }
     ]
   })
