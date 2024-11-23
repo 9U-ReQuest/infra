@@ -43,7 +43,7 @@ resource "aws_instance" "cari" {
 
   ami                    = "ami-06f73fc34ddfd65c2" # Amazon Linux 2023 AMI
   instance_type          = "t2.micro"
-  subnet_id              = data.terraform_remote_state.network.outputs.private_subnet_id
+  subnet_id              = data.terraform_remote_state.network.outputs.public_subnet_id
   vpc_security_group_ids = [aws_security_group.cari.id]
   iam_instance_profile   = aws_iam_instance_profile.cari.name
 
@@ -74,28 +74,4 @@ resource "aws_instance" "cari" {
   tags = {
     Name = "request-${terraform.workspace}.cari"
   }
-}
-
-# VPC Endpoint
-resource "aws_vpc_endpoint" "codedeploy" {
-  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
-  service_name = "com.amazonaws.ap-northeast-2.codedeploy"
-  vpc_endpoint_type = "Interface"
-  security_group_ids = [
-    aws_security_group.cari.id,
-  ]
-
-  private_dns_enabled = true
-}
-
-# VPC Endpoint Secure
-resource "aws_vpc_endpoint" "codedeploy-commands-secure" {
-  vpc_id = data.terraform_remote_state.network.outputs.vpc_id
-  service_name = "com.amazonaws.ap-northeast-2.codedeploy-commands-secure"
-  vpc_endpoint_type = "Interface"
-  security_group_ids = [
-    aws_security_group.cari.id,
-  ]
-
-  private_dns_enabled = true
 }
